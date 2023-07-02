@@ -1,6 +1,8 @@
 #ifndef REGMAP_H
 #define REGMAP_H
 
+#error "Проверить регистровую карту с документацией!"
+
 #include <stdint.h>
 #include <stdbool.h>
 
