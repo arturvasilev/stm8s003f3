@@ -20,18 +20,18 @@ volatile GPIO_t __at(0x5014) GPIOE;
 volatile GPIO_t __at(0x5019) GPIOF;
 
 // External interrupt control register 1
-enum enEXTI_CR {
-  Falling_LowLevel = 0b00,
-  Rising = 0b01,
-  Falling = 0b10,
-  RisingFalling = 0b11
-};
 typedef struct {
   uint8_t PAIS : 2;
   uint8_t PBIS : 2;
   uint8_t PCIS : 2;
   uint8_t PDIS : 2;
 } EXTI_CR1_t;
+enum enEXTI_CR {
+  EXTI_CR_Falling_LowLevel = 0b00,
+  EXTI_CR_Rising = 0b01,
+  EXTI_CR_Falling = 0b10,
+  EXTI_CR_RisingFalling = 0b11
+};
 volatile EXTI_CR1_t __at(0x50A0) EXTI_CR1;
 // External interrupt control register 2
 typedef struct {
@@ -60,20 +60,20 @@ volatile struct {
   uint8_t HSIDIV : 2;
 } __at(0x50C6) CLK_CKDIVR;
 enum enCPUDIV {
-  fmaster = 0b000,  // default
-  fmaster_2,
-  fmaster_4,
-  fmaster_8,
-  fmaster_16,
-  fmaster_32,
-  fmaster_64,
-  fmaster_128
+  CLK_CKDIVR_CPUDIV_fmaster = 0b000,  // default
+  CLK_CKDIVR_CPUDIV_fmaster_2,
+  CLK_CKDIVR_CPUDIV_fmaster_4,
+  CLK_CKDIVR_CPUDIV_fmaster_8,
+  CLK_CKDIVR_CPUDIV_fmaster_16,
+  CLK_CKDIVR_CPUDIV_fmaster_32,
+  CLK_CKDIVR_CPUDIV_fmaster_64,
+  CLK_CKDIVR_CPUDIV_fmaster_128
 };
 enum enHSIDIV {
-  fhsi = 0b00,
-  fhsi_2,
-  fhsi_4,
-  fhsi_8  // default
+  CLK_CKDIVR_HSIDIV_fhsi = 0b00,
+  CLK_CKDIVR_HSIDIV_fhsi_2,
+  CLK_CKDIVR_HSIDIV_fhsi_4,
+  CLK_CKDIVR_HSIDIV_fhsi_8  // default
 };
 // Peripheral clock gating register 1
 volatile struct {
@@ -91,7 +91,7 @@ volatile uint8_t __at(0x50C8) CLK_CSSR;
 volatile uint8_t __at(0x50C9) CLK_CCOR;
 // Peripheral clock gating register 2
 volatile struct {
-  uint8_t __Reserved : 2;
+  uint8_t : 2;
   uint8_t AWU : 1;
   uint8_t ADC : 1;
 } __at(0x50CA) CLK_PCKENR2;
@@ -149,14 +149,14 @@ volatile uint8_t __at(0x523A) UART1_PSCR;
 // Timers
 typedef struct {
   uint8_t CCS : 2;
-  uint8_t __reserved : 1;
+  uint8_t : 1;
   uint8_t OCPE : 1;  // Preload enable (amust with PWM)
   uint8_t OCM : 3;
 } TIMx_CCMR_t;
-enum enTIMx_CCMR_OCM {
-  Frozen = 0b000,
-  PWM_mode1 = 0b110,
-  PWM_mode2 = 0b111,
+enum enOCM {
+  TIMx_CCMR_OCM_Frozen = 0b000,
+  TIMx_CCMR_OCM_PWM_mode1 = 0b110,
+  TIMx_CCMR_OCM_PWM_mode2 = 0b111,
 };
 
 typedef struct {
@@ -164,7 +164,7 @@ typedef struct {
   uint8_t CC1P : 1; // Capture/compare 1 polarity
   // CC1P = 0 -- OC1 active high
   // CC1P = 1 -- OC1 active low
-  uint8_t __Reserved : 2;
+  uint8_t : 2;
   uint8_t CC2E : 1;
   uint8_t CC2P : 1;
 } TIMx_CCER1_t;
@@ -181,7 +181,7 @@ volatile struct {
   uint8_t UDIS : 1;
   uint8_t URS : 1;
   uint8_t OPM : 1;  // 0 -- counter is not stopped at update (defaut)
-  uint8_t __Reserved : 3;
+  uint8_t : 3;
   uint8_t ARPE : 1; // 1 -- Auto-reload buffer through preload register
 } __at(0x5300) TIM2_CR1;
 // TIM2 interrupt enable register
@@ -242,15 +242,52 @@ volatile uint8_t __at(0x5348) TIM4_ARR;
 
 // ADC registers
 // ADC data buffer registers
-volatile uint8_t __at(0x53E0) ADC_DBxR[0x53F3 - 0x53E0];
+volatile struct {
+  uint8_t high;
+  uint8_t low;
+} __at(0x53E0) ADC_DBxR[(0x53F4 - 0x53E0) / 2];
 // ADC control/status register
-volatile uint8_t __at(0x5400) ADC_CSR;
+volatile struct {
+  uint8_t CH : 4; // Number of AINx -channel
+  uint8_t AWDIE : 1;  // Analog watchdog interrupt enable
+  uint8_t EOCIE : 1;  // Interrupt enable for EOC
+  uint8_t AWD : 1;  // Analog watchdog flag
+  uint8_t EOC : 1;  // End of conversion flag
+} __at(0x5400) ADC_CSR;
 // ADC configuration register 1
-volatile uint8_t __at(0x5401) ADC_CR1;
+volatile struct {
+  uint8_t ADON : 1; // ADC on/off
+  uint8_t CONT : 1; // Continious conversion
+  uint8_t : 2;
+  uint8_t SPSEL : 3;  // Prescaler selection
+} __at(0x5401) ADC_CR1;
+enum enSPSEL {
+  ADC_CR1_SPSEL_fmaster_2 = 0b000,
+  ADC_CR1_SPSEL_fmaster_3,
+  ADC_CR1_SPSEL_fmaster_4,
+  ADC_CR1_SPSEL_fmaster_6,
+  ADC_CR1_SPSEL_fmaster_8,
+  ADC_CR1_SPSEL_fmaster_10,
+  ADC_CR1_SPSEL_fmaster_12,
+  ADC_CR1_SPSEL_fmaster_18
+};
 // ADC configuration register 2
-volatile uint8_t __at(0x5402) ADC_CR2;
+volatile struct {
+  uint8_t : 1;
+  uint8_t SCAN : 1; // Scan mode enabled
+  uint8_t : 1;
+  // 0 -- left alignment (ADC_DRH read first, then ADC_DRL)
+  // 1 -- right alignment (ADC_DRL read first, then ADC_DRH)
+  uint8_t ALIGN : 1; 
+  uint8_t EXTSEL : 2; // External event selection
+  uint8_t EXTTRIG : 1;  // External trigger enable
+} __at(0x5402) ADC_CR2;
 // ADC configuration register 3
-volatile uint8_t __at(0x5403) ADC_CR3;
+volatile struct {
+  uint8_t : 6;
+  uint8_t OVR : 1;  // Overrung flag
+  uint8_t DBUF : 1; // Data buffer enable
+} __at(0x5403) ADC_CR3;
 // ADC data register high
 volatile uint8_t __at(0x5404) ADC_DRH;
 // ADC data register low
