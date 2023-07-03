@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-volatile uint8_t __at(0x4000) EEPROM[128];
-
 typedef struct {
   uint8_t ODR;
   uint8_t IDR;
@@ -52,9 +50,31 @@ volatile uint8_t __at(0x50C3) CLK_CMSR;
 // Clock master switch register
 volatile uint8_t __at(0x50C4) CLK_SWR;
 // Clock switch control register
-volatile uint8_t __at(0x50C5) CLK_SWCR;
+volatile struct {
+  uint8_t SWBSY : 1;  // 1 -- clock switch ongoing
+  uint8_t SWEN : 1;   // 1 -- enable clock switch execution
+} __at(0x50C5) CLK_SWCR;
 // Clock divider register
-volatile uint8_t __at(0x50C6) CLK_CKDIVR;
+volatile struct {
+  uint8_t CPUDIV : 3;
+  uint8_t HSIDIV : 2;
+} __at(0x50C6) CLK_CKDIVR;
+enum enCPUDIV {
+  fmaster = 0b000,  // default
+  fmaster_2,
+  fmaster_4,
+  fmaster_8,
+  fmaster_16,
+  fmaster_32,
+  fmaster_64,
+  fmaster_128
+};
+enum enHSIDIV {
+  fhsi = 0b00,
+  fhsi_2,
+  fhsi_4,
+  fhsi_8  // default
+};
 // Peripheral clock gating register 1
 volatile struct {
   uint8_t I2C : 1;
@@ -126,10 +146,44 @@ volatile uint8_t __at(0x5239) UART1_GTR;
 // UART1 prescaler register
 volatile uint8_t __at(0x523A) UART1_PSCR;
 
+// Timers
+typedef struct {
+  uint8_t CCS : 2;
+  uint8_t __reserved : 1;
+  uint8_t OCPE : 1;  // Preload enable (amust with PWM)
+  uint8_t OCM : 3;
+} TIMx_CCMR_t;
+enum enTIMx_CCMR_OCM {
+  Frozen = 0b000,
+  PWM_mode1 = 0b110,
+  PWM_mode2 = 0b111,
+};
+
+typedef struct {
+  uint8_t CC1E : 1; // Capture/compare 1 output enable
+  uint8_t CC1P : 1; // Capture/compare 1 polarity
+  // CC1P = 0 -- OC1 active high
+  // CC1P = 1 -- OC1 active low
+  uint8_t __Reserved : 2;
+  uint8_t CC2E : 1;
+  uint8_t CC2P : 1;
+} TIMx_CCER1_t;
+
+typedef struct {
+  uint8_t CC3E : 1;
+  uint8_t CC3P : 1;
+} TIMx_CCER2_t;
 
 // Timer TIM2
 // TIM2 control register 1
-volatile uint8_t __at(0x5300) TIM2_CR1;
+volatile struct {
+  uint8_t CEN : 1;  // 1 -- counter enabled
+  uint8_t UDIS : 1;
+  uint8_t URS : 1;
+  uint8_t OPM : 1;  // 0 -- counter is not stopped at update (defaut)
+  uint8_t __Reserved : 3;
+  uint8_t ARPE : 1; // 1 -- Auto-reload buffer through preload register
+} __at(0x5300) TIM2_CR1;
 // TIM2 interrupt enable register
 volatile uint8_t __at(0x5303) TIM2_IER;
 // TIM2 status register 1
@@ -139,15 +193,15 @@ volatile uint8_t __at(0x5305) TIM2_SR2;
 // TIM2 event generation register
 volatile uint8_t __at(0x5306) TIM2_EGR;
 // TIM2 capture/compare mode register 1
-volatile uint8_t __at(0x5307) TIM2_CCMR1;
+volatile TIMx_CCMR_t __at(0x5307) TIM2_CCMR1;
 // TIM2 capture/compare mode register 2
-volatile uint8_t __at(0x5308) TIM2_CCMR2;
+volatile TIMx_CCMR_t __at(0x5308) TIM2_CCMR2;
 // TIM2 capture/compare mode register 3
-volatile uint8_t __at(0x5309) TIM2_CCMR3;
+volatile TIMx_CCMR_t __at(0x5309) TIM2_CCMR3;
 // TIM2 capture/compare enable register 1
-volatile uint8_t __at(0x530A) TIM2_CCER1;
+volatile TIMx_CCER1_t __at(0x530A) TIM2_CCER1;
 // TIM2 capture/compare enable register 2
-volatile uint8_t __at(0x530B) TIM2_CCER2;
+volatile TIMx_CCER2_t __at(0x530B) TIM2_CCER2;
 // TIM2 counter high
 volatile uint8_t __at(0x530C) TIM2_CNTRH;
 // TIM2 counter low

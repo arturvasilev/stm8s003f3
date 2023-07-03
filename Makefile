@@ -8,7 +8,7 @@ flash_alternator: $(BDIR)/alternator.ihx
 $(BDIR)/alternator.ihx: alternator.c
 	sdcc -mstm8 -o $@ $^
 
-alternator.c : defines.h regmap.h
+alternator.c : defines.h regmap.h isr_alternator_handlers.h
 
 clean:
 	rm -vrf build/*
