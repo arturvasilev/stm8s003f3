@@ -1,6 +1,8 @@
 #ifndef ISR_HANDLERS_H
 #define ISR_HANDLERS_H
 
+#include "alternator_utils.h"
+
 // Interrupt-handlers defines
 void TRAP_handler() __trap {}
 
@@ -32,6 +34,20 @@ void UART1_TxCompl_handler() __interrupt(17) {}
 void UART1_DFULL_handler() __interrupt(18) {}
 
 // ADC
-void ADC1_handler() __interrupt(22) {}
+void ADC1_handler() __interrupt(22) {
+  // Остановим непрерывные конверсии
+  ADC_CR1.CONT = false;
+
+  ADC.vals[ADC.converting_idx] = ADC_read();
+
+  // Переключимся на следующий канал
+  ADC_CSR.CH = next_ADC_channel();
+
+  // Очистим флаг EOC
+  ADC_CSR.EOC = false;
+ 
+  // Запустим конвертации
+  ADC_CR1.CONT = true;
+}
 
 #endif  // ISR_HANDLERS_H
