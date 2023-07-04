@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-void PD3_on() {
+void LED_on() {
+  // PD3 в Push-pull в высокий уровень
   const uint8_t mask = 0b1 << 3;
   GPIOD.DDR |= mask;
   GPIOD.CR1 |= mask;
@@ -15,11 +16,13 @@ void PD3_on() {
 }
 
 void main(void) {
-  PD3_on();
 
   disableInterrupts();
 
   init();
+
+  // Индикаторный светодиод, что всё прошилось и заработало
+  LED_on();
 
   enableInterrupts();
 
