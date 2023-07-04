@@ -1,7 +1,8 @@
-#ifndef ISR_HANDLERS_H
-#define ISR_HANDLERS_H
+#ifndef ALTERNATOR_ISR_HANDLERS_C
+#define ALTERNATOR_ISR_HANDLERS_C
 
-#include "alternator_utils.h"
+#include "utils.h"
+#include "../regmap.h"
 
 // Interrupt-handlers defines
 void TRAP_handler() __trap {}
@@ -50,4 +51,4 @@ void ADC1_handler() __interrupt(22) {
   ADC_CR1.CONT = true;
 }
 
-#endif  // ISR_HANDLERS_H
+#endif  // ALTERNATOR_ISR_HANDLERS_C

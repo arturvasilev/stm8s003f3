@@ -5,6 +5,9 @@
     "*.make": "makefile",
     "isr_alternator_handlers.h": "c",
     "defines.h": "c",
-    "regmap.h": "c"
+    "regmap.h": "c",
+    "alternator_utils.h": "c",
+    "utils.h": "c",
+    "stdint.h": "c"
   }
 }

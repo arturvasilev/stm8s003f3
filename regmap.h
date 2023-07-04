@@ -191,7 +191,12 @@ volatile uint8_t __at(0x5304) TIM2_SR1;
 // TIM2 status register 2
 volatile uint8_t __at(0x5305) TIM2_SR2;
 // TIM2 event generation register
-volatile uint8_t __at(0x5306) TIM2_EGR;
+volatile struct {
+  uint8_t UG : 1;  // Update generation
+  uint8_t CC1G : 1; // Capture/compare 1 generation
+  uint8_t CC2G : 1; // Capture/compare 2 generation
+  uint8_t CC3G : 1; // Capture/compare 3 generation
+} __at(0x5306) TIM2_EGR;
 // TIM2 capture/compare mode register 1
 volatile TIMx_CCMR_t __at(0x5307) TIM2_CCMR1;
 // TIM2 capture/compare mode register 2
@@ -207,7 +212,9 @@ volatile uint8_t __at(0x530C) TIM2_CNTRH;
 // TIM2 counter low
 volatile uint8_t __at(0x530D) TIM2_CNTRL;
 // TIM2 prescaler register
-volatile uint8_t __at(0x530E) TIM2_PSCR;
+volatile struct {
+  uint8_t PSC : 4;  // Power of 2
+} __at(0x530E) TIM2_PSCR;
 // TIM2 auto-reload register high
 volatile uint8_t __at(0x530F) TIM2_ARRH;
 // TIM2 auto-reload register low
