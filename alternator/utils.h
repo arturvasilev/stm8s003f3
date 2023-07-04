@@ -14,4 +14,15 @@ uint8_t next_ADC_channel();
 
 uint16_t ADC_read();
 
+struct EEPROM_t {
+  uint16_t PWM_max;
+};
+extern struct EEPROM_t EEPROM_RAM;
+
+void EEPROM_load();
+void EEPROM_save();
+
+void PWM_set(uint16_t pwm);
+uint16_t PWM_get();
+
 #endif  // ALTERNATOR_UTILS_H

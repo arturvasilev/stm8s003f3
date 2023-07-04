@@ -6,6 +6,10 @@
 #include "../regmap.h"
 
 struct ADC_t ADC;
+struct EEPROM_t EEPROM_RAM;
+volatile struct EEPROM_t __at(0x4000) EEPROM;
+// assert не работает, поэтому проверять руками
+// static_assert(sizeof(EEPROM) <= 128);
 
 uint8_t next_ADC_channel() {
   ++ADC.converting_idx;
@@ -20,6 +24,31 @@ uint16_t ADC_read() {
     ret += ADC_DBxR[i].high << 8 + ADC_DBxR[i].low;
 
   return ret / 10;
+}
+
+void EEPROM_load() {
+  EEPROM_RAM = EEPROM;
+}
+
+void EEPROM_save() {
+  EEPROM = EEPROM_RAM;
+}
+
+void PWM_set(uint16_t pwm) {
+  // pwm = pwm > EEPROM_RAM.PWM_max ? EEPROM_RAM.PWM_max : pwm;
+  uint16_t pwm_max = TIM2_ARRH << 8;
+  pwm_max |= TIM2_ARRL;
+  pwm %= pwm_max;
+
+  TIM2_CCR1H = pwm >> 8;
+  TIM2_CCR1L = pwm & 0xff;
+}
+
+uint16_t PWM_get() {
+  uint16_t ret = TIM2_CCR1H;
+  ret <<= 8;
+  ret |= TIM2_CCR1L;
+  return ret;
 }
 
 #endif  // ALTERNATOR_UTILS_C
