@@ -18,6 +18,6 @@ void ADC_process();
 void PWM_update();
 
 extern uint16_t *Vin;
-extern uint16_t *Vin;
+extern uint16_t *Vout;
 
 #endif  // ALTERNATOR_UTILS_H

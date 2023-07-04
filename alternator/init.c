@@ -67,6 +67,27 @@ void TIM2_init() {
   TIM2_CR1.CEN = true;
 }
 
+void TIM4_init() {
+  // Настроим простейший внутренний таймер на 1кГц
+  // Для работы software-timers
+
+  // Enable preload of auto-reload
+  TIM4_CR1.ARPE = true;
+  // Включим update interrupt
+  TIM4_IER.UIE = true;
+
+  // fmaster = 16MHz
+  TIM4_PSCR.PSC = 7;  // = 2^7 = 128
+
+  // Здесь частота =125кГц
+  // Поэтому ставим ARR = 125, и получим частоту прерывай
+  // по переполнению 1 кГц!
+  TIM4_ARR = 125;
+
+  // Запуск таймера
+  TIM4_CR1.CEN = true;
+}
+
 void ADC_init() {
   // PC4=AIN2 -- Uin
   // PD2=AIN3 -- Uout
@@ -115,6 +136,7 @@ void init() {
   clock_init();
   GPIO_init();
   TIM2_init();
+  TIM4_init();
   ADC_init();
 }
 

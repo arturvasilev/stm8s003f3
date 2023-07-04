@@ -175,6 +175,72 @@ typedef struct {
 } TIMx_CCER2_t;
 
 // Timer TIM2
+// TIM1 control register 1
+volatile uint8_t __at(0x5250) TIM1_CR1;
+// TIM1 control register 2
+volatile uint8_t __at(0x5251) TIM1_CR2;
+// Slave mode control register
+volatile uint8_t __at(0x5252) TIM1_SMCR;
+// External trigger register
+volatile uint8_t __at(0x5253) TIM1_ETR;
+// Interrupt enable register
+volatile uint8_t __at(0x5254) TIM1_IER;
+// Status register 1
+volatile uint8_t __at(0x5255) TIM1_SR1;
+// Status register 2
+volatile uint8_t __at(0x5256) TIM1_SR2;
+// Event reneration register
+volatile uint8_t __at(0x5257) TIM1_EGR;
+// Capture/compare mode register 1
+volatile uint8_t __at(0x5258) TIM1_CCMR1;
+// Capture/compare mode register 2
+volatile uint8_t __at(0x5259) TIM1_CCMR2;
+// Capture/compare mode register 3
+volatile uint8_t __at(0x525A) TIM1_CCMR3;
+// Capture/compare mode register 4
+volatile uint8_t __at(0x525B) TIM1_CCMR4;
+// Capture/compare enable register 1
+volatile uint8_t __at(0x525C) TIM1_CERR1;
+// Capture/compare enable register 2
+volatile uint8_t __at(0x525D) TIM1_CERR2;
+// Counter high
+volatile uint8_t __at(0x525E) TIM1_CNTRH;
+// Counter low
+volatile uint8_t __at(0x525F) TIM1_CNTRL;
+// Prescaler register high
+volatile uint8_t __at(0x5260) TIM1_PSCRH;
+// Prescaler register low
+volatile uint8_t __at(0x5261) TIM1_PSCRL;
+// Auto-reload register high
+volatile uint8_t __at(0x5262) TIM1_ARRH;
+// Auto-reload register low
+volatile uint8_t __at(0x5263) TIM1_ARRL;
+// Repetition counter register
+volatile uint8_t __at(0x5264) TIM1_RCR;
+// Capture/compare register 1 high
+volatile uint8_t __at(0x5265) TIM1_CCR1H;
+// Capture/compare register 1 low
+volatile uint8_t __at(0x5266) TIM1_CCR1L;
+// Capture/compare register 2 high
+volatile uint8_t __at(0x5267) TIM1_CCR2H;
+// Capture/compare register 2 low
+volatile uint8_t __at(0x5268) TIM1_CCR2L;
+// Capture/compare register 3 high
+volatile uint8_t __at(0x5269) TIM1_CCR3H;
+// Capture/compare register 3 low
+volatile uint8_t __at(0x526A) TIM1_CCR3L;
+// Capture/compare register 4 high
+volatile uint8_t __at(0x526B) TIM1_CCR4H;
+// Capture/compare register 4 low
+volatile uint8_t __at(0x526C) TIM1_CCR4L;
+// Breake register
+volatile uint8_t __at(0x526D) TIM1_BKR;
+// Dead-time register
+volatile uint8_t __at(0x526E) TIM1_DTR;
+// Output idle state register
+volatile uint8_t __at(0x526F) TIM1_OISR;
+
+// Timer TIM2
 // TIM2 control register 1
 volatile struct {
   uint8_t CEN : 1;  // 1 -- counter enabled
@@ -183,7 +249,7 @@ volatile struct {
   uint8_t OPM : 1;  // 0 -- counter is not stopped at update (defaut)
   uint8_t : 3;
   uint8_t ARPE : 1; // 1 -- Auto-reload buffer through preload register
-} __at(0x5300) TIM2_CR1;
+} TIMx_CR1_t __at(0x5300) TIM2_CR1;
 // TIM2 interrupt enable register
 volatile uint8_t __at(0x5303) TIM2_IER;
 // TIM2 status register 1
@@ -233,17 +299,25 @@ volatile uint8_t __at(0x5315) TIM2_CCR3H;
 volatile uint8_t __at(0x5316) TIM2_CCR3L;
 
 // TIM4 control register 1
-volatile uint8_t __at(0x5340) TIM4_CR1;
+volatile TIMx_CR1_t __at(0x5340) TIM4_CR1;
 // TIM4 interrupt enable register
-volatile uint8_t __at(0x5343) TIM4_IER;
+volatile struct {
+  uint8_t UIE : 1;  // Update interrupt enable
+} __at(0x5343) TIM4_IER;
 // TIM4 status register
-volatile uint8_t __at(0x5344) TIM4_SR;
+volatile struct {
+  uint8_t UIF : 1;  // Update interrupt flag
+  uint8_t : 5;
+  uint8_t TIF : 1;  // Trigger interrupt flag
+} __at(0x5344) TIM4_SR;
 // TIM4 event generation register
 volatile uint8_t __at(0x5345) TIM4_EGR;
 // TIM4 counter
 volatile uint8_t __at(0x5345) TIM4_CNTR;
 // TIM4 prescaler register
-volatile uint8_t __at(0x5345) TIM4_PSCR;
+volatile struct {
+  uint8_t PSC : 3;  // Prescaler -- power of 2
+} __at(0x5345) TIM4_PSCR;
 // TIM4 auto-reload register
 volatile uint8_t __at(0x5348) TIM4_ARR;
 

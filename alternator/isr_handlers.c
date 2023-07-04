@@ -48,4 +48,9 @@ void ADC1_handler() __interrupt(22) {
   ADC_CR1.CONT = true;
 }
 
+void TIM4_UOVFL_handler() __interrupt(23) {
+  // Очистить флаг о прерывании
+  TIM4_SR.UIF = false;
+}
+
 #endif  // ALTERNATOR_ISR_HANDLERS_C

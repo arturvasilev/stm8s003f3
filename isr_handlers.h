@@ -34,4 +34,8 @@ void UART1_DFULL_handler() __interrupt(18);
 // ADC
 void ADC1_handler() __interrupt(22);
 
+// TIM4 update/overflow
+void TIM4_UOVFL_handler() __interrupt(23);
+
+
 #endif  // ISR_HANDLERS_H
