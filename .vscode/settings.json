@@ -1,6 +1,6 @@
 {
   "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
-  "C_Cpp.default.compilerPath": "/usr/bin/sdcc",
+  "C_Cpp.default.compilerPath": "/usr/bin/gcc-11",
   "files.associations": {
     "*.make": "makefile",
     "isr_alternator_handlers.h": "c",
@@ -8,6 +8,7 @@
     "regmap.h": "c",
     "alternator_utils.h": "c",
     "utils.h": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "random": "c"
   }
 }

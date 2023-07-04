@@ -39,10 +39,7 @@ void ADC1_handler() __interrupt(22) {
   // Остановим непрерывные конверсии
   ADC_CR1.CONT = false;
 
-  ADC.vals[ADC.converting_idx] = ADC_read();
-
-  // Переключимся на следующий канал
-  ADC_CSR.CH = next_ADC_channel();
+  ADC_process();
 
   // Очистим флаг EOC
   ADC_CSR.EOC = false;

@@ -3,6 +3,7 @@
 
 #include "init.h"
 #include "utils.h"
+#include "constants.h"
 
 #include "../regmap.h"
 #include "../defines.h"
@@ -58,8 +59,9 @@ void TIM2_init() {
   // Установим частоту
   // Сейчас f_hsi = 16MHz
   TIM2_PSCR.PSC = 0;
-  TIM2_ARRH = 0x0;
-  TIM2_ARRL = 255;
+  const uint16_t kPWM_size = PWM_SIZE;
+  TIM2_ARRH = kPWM_size >> 8;
+  TIM2_ARRL = kPWM_size & 0xff;
 
   // Включаем сконфигурированный таймер
   TIM2_CR1.CEN = true;
@@ -110,7 +112,6 @@ void ADC_init() {
 }
 
 void init() {
-  EEPROM_load();
   clock_init();
   GPIO_init();
   TIM2_init();

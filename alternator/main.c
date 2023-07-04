@@ -16,8 +16,6 @@ void PD3_on() {
 
 void main(void) {
   PD3_on();
-  EEPROM_RAM.PWM_max = 6 * (UINT16_MAX / 10);
-  EEPROM_save();
 
   disableInterrupts();
 
@@ -25,16 +23,8 @@ void main(void) {
 
   enableInterrupts();
 
-  uint16_t pwm = PWM_get();
-  uint16_t prescaler = 0;
-
   for (;;) {
-    if (prescaler == 0) {
-      pwm = (pwm + 1) % 255;
-      PWM_set(pwm);
-      GPIOD.ODR ^= 0b1 << 3;
-    }
-    prescaler = (prescaler + 1) % 16;
     wfi();
+    PWM_update();
   }
 }

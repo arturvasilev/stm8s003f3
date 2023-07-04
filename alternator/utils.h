@@ -1,31 +1,23 @@
 #ifndef ALTERNATOR_UTILS_H
 #define ALTERNATOR_UTILS_H
 
+#include "eeprom.h"
+
 #include <stdint.h>
 
 struct ADC_t {
+  // PC4=AIN2 -- Uin
+  // PD2=AIN3 -- Uout
   uint8_t channels[2];
   uint8_t converting_idx;
   uint16_t vals[2];
 };
 extern struct ADC_t ADC;
 
-uint8_t next_ADC_channel();
+void ADC_process();
+void PWM_update();
 
-uint16_t ADC_read();
-
-struct EEPROM_t {
-  uint16_t PWM_max;
-};
-volatile struct EEPROM_t __at(0x4000) EEPROM;
-// assert не работает, поэтому проверять руками
-// static_assert(sizeof(EEPROM) <= 128);
-extern struct EEPROM_t EEPROM_RAM;
-
-void EEPROM_load();
-void EEPROM_save();
-
-void PWM_set(uint16_t pwm);
-uint16_t PWM_get();
+extern uint16_t *Vin;
+extern uint16_t *Vin;
 
 #endif  // ALTERNATOR_UTILS_H
