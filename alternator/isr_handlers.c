@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "../regmap.h"
+#include "timers.h"
 
 // Interrupt-handlers defines
 void TRAP_handler() __trap {}
@@ -49,6 +50,8 @@ void ADC1_handler() __interrupt(22) {
 }
 
 void TIM4_UOVFL_handler() __interrupt(23) {
+  Timers_tick();
+
   // Очистить флаг о прерывании
   TIM4_SR.UIF = false;
 }
