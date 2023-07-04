@@ -6,10 +6,7 @@
 #include "../regmap.h"
 
 struct ADC_t ADC;
-struct EEPROM_t EEPROM_RAM;
-volatile struct EEPROM_t __at(0x4000) EEPROM;
-// assert не работает, поэтому проверять руками
-// static_assert(sizeof(EEPROM) <= 128);
+struct EEPROM_t EEPROM_RAM; 
 
 uint8_t next_ADC_channel() {
   ++ADC.converting_idx;

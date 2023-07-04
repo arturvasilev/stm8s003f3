@@ -17,6 +17,9 @@ uint16_t ADC_read();
 struct EEPROM_t {
   uint16_t PWM_max;
 };
+volatile struct EEPROM_t __at(0x4000) EEPROM;
+// assert не работает, поэтому проверять руками
+// static_assert(sizeof(EEPROM) <= 128);
 extern struct EEPROM_t EEPROM_RAM;
 
 void EEPROM_load();
