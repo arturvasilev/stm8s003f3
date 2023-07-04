@@ -4,6 +4,7 @@
 #include "init.h"
 #include "utils.h"
 #include "constants.h"
+#include "swPWM.h"
 
 #include "../regmap.h"
 #include "../defines.h"
@@ -138,6 +139,7 @@ void init() {
   TIM2_init();
   TIM4_init();
   ADC_init();
+  swPWM_init();
 }
 
 #endif  // ALTERNATOR_INIT_C

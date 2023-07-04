@@ -33,4 +33,9 @@
 // Коэффициент для пересчёта напряжения в ШИМ
 #define PWM_SLOPE (PWM_MAX / (UIN_MAX - UIN_MIN));
 
+// Период swPWM для индикаторного светодиода, в мс
+#define SWPWM_LED_MAX 500
+
+#define SWPWM_LED_SLOPE (SWPWM_LED_MAX / (UIN_MAX - UIN_MIN))
+
 #endif  // ALTERNATOR_CONSTANTS_H

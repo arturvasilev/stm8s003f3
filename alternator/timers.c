@@ -1,43 +1,37 @@
-#ifndef ALTERNATOR_TIMERS_C
-#define ALTERNATOR_TIMERS_C
-
-#include <stdint.h>
+#include "timers.h"
 
 uint16_t now = 0;
-
-typedef struct {
-  uint16_t period;
-  uint16_t last_call;
-  void (*cb)(void*);
-  void *arg;
-
-  timer_t *prev;
-  timer_t *next;
-} timer_t;
+timer_t *timers = 0;
+swPWM_t *pwms = 0;
 
 // Возвращает время следующего срабатывания
 uint16_t Timers_next_call(timer_t *t) {
-  if (UINT16_MAX - t->last_call > t->period)
-    return t->last_call + t->period;
-  
+  if (UINT16_MAX - t->last_call > t->period) return t->last_call + t->period;
+
   return t->period - (UINT16_MAX - t->last_call);
 }
-
-timer_t *timers = 0;
 
 void Timers_tick() {
   ++now;
 
   for (timer_t *tim = timers; tim != 0; tim = tim->next) {
     // Process timer
-    if (Timers_next_call(tim) <= now && tim->cb != 0)
-      tim->cb(tim->arg);
+    if (Timers_next_call(tim) <= now && tim->cb != 0) tim->cb(tim->arg);
+  }
+
+  for (swPWM_t *pwm = pwms; pwm != 0; pwm = pwm->next) {
+    if (pwm->counter == 0 && pwm->cb_on)
+      pwm->cb_on();
+    else if (pwm->counter == pwm->duty_cycle && pwm->cb_off)
+      pwm->cb_off();
+
+    ++pwm->counter;
+
+    pwm->counter %= pwm->period;
   }
 }
 
-void Timers_now() {
-  return now;
-}
+uint16_t Timers_now() { return now; }
 
 void Timers_add(timer_t *new) {
   if (timers != 0) {
@@ -61,4 +55,24 @@ void Timers_remove(timer_t *rm) {
   }
 }
 
-#endif  // ALTERNATOR_TIMERS_C
+void swPWM_add(swPWM_t *new) {
+  if (pwms != 0) {
+    new->next = pwms;
+    pwms->prev = new;
+    new->prev = 0;
+    pwms = new;
+  } else {
+    pwms = new;
+    new->prev = new->next = 0;
+  }
+}
+
+void swPWM_remove(swPWM_t *rm) {
+  for (swPWM_t *pwm = pwms; pwm != 0; pwm = pwm->next) {
+    if (pwm == rm) {
+      pwm->prev->next = pwm->next;
+      pwm->next->prev = pwm->prev;
+      return;
+    }
+  }
+}

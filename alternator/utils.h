@@ -1,8 +1,6 @@
 #ifndef ALTERNATOR_UTILS_H
 #define ALTERNATOR_UTILS_H
 
-#include "eeprom.h"
-
 #include <stdint.h>
 
 struct ADC_t {

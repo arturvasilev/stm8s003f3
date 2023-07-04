@@ -242,14 +242,15 @@ volatile uint8_t __at(0x526F) TIM1_OISR;
 
 // Timer TIM2
 // TIM2 control register 1
-volatile struct {
+typedef struct {
   uint8_t CEN : 1;  // 1 -- counter enabled
   uint8_t UDIS : 1;
   uint8_t URS : 1;
   uint8_t OPM : 1;  // 0 -- counter is not stopped at update (defaut)
   uint8_t : 3;
   uint8_t ARPE : 1; // 1 -- Auto-reload buffer through preload register
-} TIMx_CR1_t __at(0x5300) TIM2_CR1;
+} TIMx_CR1_t;
+volatile TIMx_CR1_t __at(0x5300) TIM2_CR1;
 // TIM2 interrupt enable register
 volatile uint8_t __at(0x5303) TIM2_IER;
 // TIM2 status register 1
