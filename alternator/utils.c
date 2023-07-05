@@ -43,8 +43,11 @@ void PWM_update() {
       pwm = (kUin_max - *Vin) * kPWM_slope;
     }
 
-    TIM2_CCR1H = pwm >> 8;
-    TIM2_CCR1L = pwm & 0xff;
+    if (pwm > kPWM_max / 2) PA1_on();
+    else PA1_off();
+
+    TIM1_CCR4H = pwm >> 8;
+    TIM1_CCR4L = pwm & 0xff;
   }
 
   // Обновим ШИМ до индикаторного светодиода
@@ -54,26 +57,23 @@ void PWM_update() {
     if (*Vin < kUin_min) pwm = kPWM_LED_max;
     else if (*Vin >= kUin_max) pwm = 0;
     else {
-      // pwm = PWM_SLOPE * (*Vin - kUin_min);
-      pwm = *Vin;
-      pwm -= kUin_min;
-      pwm *= kPWM_LED_slope;
+      pwm = (kUin_max - *Vin) * kPWM_LED_slope;
     }
 
-    TIM1_CCR3H = pwm >> 8;
-    TIM1_CCR3L = pwm & 0xff;
+    TIM2_CCR1H = pwm >> 8;
+    TIM2_CCR1L = pwm & 0xff;
   }
 }
 
-void PD3_on() {
-  static const uint8_t mask = 0b1 << 3;
-  GPIOD.DDR |= mask;
-  GPIOD.ODR |= mask;
-  GPIOD.CR1 |= mask;
+void PA1_on() {
+  static const uint8_t mask = 0b1 << 1;
+  GPIOA.DDR |= mask;
+  GPIOA.ODR |= mask;
+  GPIOA.CR1 |= mask;
 }
 
-void PD3_off() {
-  GPIOD.ODR &= (0b1 << 3) ^ 0xff;
+void PA1_off() {
+  GPIOA.ODR &= (0b1 << 1) ^ 0xff;
 }
 
 #endif  // ALTERNATOR_UTILS_C

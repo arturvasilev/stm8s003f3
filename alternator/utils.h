@@ -16,8 +16,8 @@ extern uint16_t *Vout;
 
 void ADC_process();
 void PWM_update();
-void PD3_on();
-void PD3_off();
+void PA1_on();
+void PA1_off();
 
 
 #endif  // ALTERNATOR_UTILS_H

@@ -3,9 +3,8 @@
 
 #include <stdint.h>
 
-// Число шагов ШИМ -- это TIM2_ARR
-// Итоговая частота ШИМ: 16MHz / PWM_SIZE
-#define PWM_SIZE  1000 // freq=16kHz
+// Число шагов ШИМ -- это TIM1_ARR
+#define PWM_SIZE  UINT16_MAX
 static const uint16_t kPWM_size = PWM_SIZE;
 
 // Забъёмся на максимальный ШИМ в 60%
@@ -39,10 +38,13 @@ static const uint16_t kUin_min = UIN_MIN;
 static const uint16_t kPWM_slope = PWM_SLOPE;
 
 // Число шагов PWM для индикаторного светодиода, в тиках
-#define PWM_LED_MAX UINT16_MAX
+#define PWM_LED_PSC 3
+#define PWM_LED_FREQ (2000000. / (0b1 << PWM_LED_PSC))
+#define PWM_LED_SIZE (PWM_LED_FREQ / 5)
+static const uint16_t kPWM_LED_size = PWM_LED_SIZE;
+#define PWM_LED_MAX (PWM_LED_SIZE * 1.0)
 static const uint16_t kPWM_LED_max = PWM_LED_MAX;
-
-#define PWM_LED_SLOPE (PWM_LED_MAX / (UIN_MAX - 0))
+#define PWM_LED_SLOPE (PWM_LED_MAX / (UIN_MAX - UIN_MIN))
 static const uint16_t kPWM_LED_slope = PWM_LED_SLOPE;
 
 #endif  // ALTERNATOR_CONSTANTS_H
