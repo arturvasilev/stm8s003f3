@@ -41,18 +41,34 @@ typedef struct {
 volatile EXTI_CR2_t __at(0x50A1) EXTI_CR2;
 
 // Internal clock control register
-volatile uint8_t __at(0x50C0) CLK_ICKR;
+volatile struct {
+  uint8_t HSIEN : 1;  // High speed internal RC osc enable
+  uint8_t HSIRDY : 1; // HSI osc ready
+  uint8_t FHWU : 1; // Fast wakeup enable
+  uint8_t LSIEN : 1;  // Low-speed osc enable
+  uint8_t LSIRDY : 1; // Low-speed osc ready
+  uint8_t REGAH : 1;
+} __at(0x50C0) CLK_ICKR;
 // External clock control register
 volatile uint8_t __at(0x50C1) CLK_ECKR;
 
 // Clock master status register
-volatile uint8_t __at(0x50C3) CLK_CMSR;
+volatile struct {
+  uint8_t CKM;  // Clock master status bits
+} __at(0x50C3) CLK_CMSR;
+enum enCLK_CMSR_CKM {
+  enCLK_CMSR_CKM_HSI = 0xE1,
+  enCLK_CMSR_CKM_LSI = 0xD2,
+  enCLK_CMSR_CKM_HSE = 0xB4
+};
 // Clock master switch register
 volatile uint8_t __at(0x50C4) CLK_SWR;
 // Clock switch control register
 volatile struct {
   uint8_t SWBSY : 1;  // 1 -- clock switch ongoing
   uint8_t SWEN : 1;   // 1 -- enable clock switch execution
+  uint8_t SWIEN : 1;  // Clock switch interrupt enable
+  uint8_t SWIF : 1; // Clock switch interrupt flag
 } __at(0x50C5) CLK_SWCR;
 // Clock divider register
 volatile struct {
@@ -149,12 +165,15 @@ volatile uint8_t __at(0x523A) UART1_PSCR;
 // Timers
 typedef struct {
   uint8_t CCS : 2;
-  uint8_t : 1;
+  // v Reserved for TIM1
+  uint8_t OCFE : 1; // Output compare fast enable
   uint8_t OCPE : 1;  // Preload enable (amust with PWM)
   uint8_t OCM : 3;
+  // v Reserved for TIM1
+  uint8_t OCCE : 1; // Output compare clear enable
 } TIMx_CCMR_t;
 enum enOCM {
-  TIMx_CCMR_OCM_Frozen = 0b000,
+  TIMx_CCMR_OCM_Frozen = 0b000, // (default)
   TIMx_CCMR_OCM_PWM_mode1 = 0b110,
   TIMx_CCMR_OCM_PWM_mode2 = 0b111,
 };
@@ -174,11 +193,27 @@ typedef struct {
   uint8_t CC3P : 1;
 } TIMx_CCER2_t;
 
-// Timer TIM2
+// Timer TIM1
+
+typedef struct {
+  uint8_t CEN : 1;  // 1 -- counter enabled
+  uint8_t UDIS : 1; // Update disable
+  uint8_t URS : 1;  // Update request source
+  uint8_t OPM : 1;  // 0 -- counter is not stopped at update (defaut)
+  uint8_t DIR : 1;  // Direction. 0 -- as up-counter. Reserved for TIM1
+  uint8_t CMS : 2;  // Center-aligned mode selection
+  uint8_t ARPE : 1; // 1 -- Auto-reload buffer through preload register
+} TIMx_CR1_t;
 // TIM1 control register 1
-volatile uint8_t __at(0x5250) TIM1_CR1;
+volatile TIMx_CR1_t __at(0x5250) TIM1_CR1;
 // TIM1 control register 2
-volatile uint8_t __at(0x5251) TIM1_CR2;
+volatile struct {
+  uint8_t CCPC : 1; // Capture/compare preload control
+  uint8_t : 1;
+  uint8_t COMS : 1; // Cap/comp control update selection
+  uint8_t : 1;  // Must be kept cleared
+  uint8_t MMS : 3;  // Master mode selection
+} __at(0x5251) TIM1_CR2;
 // Slave mode control register
 volatile uint8_t __at(0x5252) TIM1_SMCR;
 // External trigger register
@@ -192,17 +227,17 @@ volatile uint8_t __at(0x5256) TIM1_SR2;
 // Event reneration register
 volatile uint8_t __at(0x5257) TIM1_EGR;
 // Capture/compare mode register 1
-volatile uint8_t __at(0x5258) TIM1_CCMR1;
+volatile TIMx_CCMR_t __at(0x5258) TIM1_CCMR1;
 // Capture/compare mode register 2
-volatile uint8_t __at(0x5259) TIM1_CCMR2;
+volatile TIMx_CCMR_t __at(0x5259) TIM1_CCMR2;
 // Capture/compare mode register 3
-volatile uint8_t __at(0x525A) TIM1_CCMR3;
+volatile TIMx_CCMR_t __at(0x525A) TIM1_CCMR3;
 // Capture/compare mode register 4
-volatile uint8_t __at(0x525B) TIM1_CCMR4;
+volatile TIMx_CCMR_t __at(0x525B) TIM1_CCMR4;
 // Capture/compare enable register 1
-volatile uint8_t __at(0x525C) TIM1_CERR1;
+volatile TIMx_CCER1_t __at(0x525C) TIM1_CCER1;
 // Capture/compare enable register 2
-volatile uint8_t __at(0x525D) TIM1_CERR2;
+volatile TIMx_CCER2_t __at(0x525D) TIM1_CCER2;
 // Counter high
 volatile uint8_t __at(0x525E) TIM1_CNTRH;
 // Counter low
@@ -242,14 +277,6 @@ volatile uint8_t __at(0x526F) TIM1_OISR;
 
 // Timer TIM2
 // TIM2 control register 1
-typedef struct {
-  uint8_t CEN : 1;  // 1 -- counter enabled
-  uint8_t UDIS : 1;
-  uint8_t URS : 1;
-  uint8_t OPM : 1;  // 0 -- counter is not stopped at update (defaut)
-  uint8_t : 3;
-  uint8_t ARPE : 1; // 1 -- Auto-reload buffer through preload register
-} TIMx_CR1_t;
 volatile TIMx_CR1_t __at(0x5300) TIM2_CR1;
 // TIM2 interrupt enable register
 volatile uint8_t __at(0x5303) TIM2_IER;
