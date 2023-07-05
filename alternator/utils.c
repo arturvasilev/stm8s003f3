@@ -43,9 +43,6 @@ void PWM_update() {
       pwm = (kUin_max - *Vin) * kPWM_slope;
     }
 
-    if (pwm > kPWM_max / 2) PA1_on();
-    else PA1_off();
-
     TIM1_CCR4H = pwm >> 8;
     TIM1_CCR4L = pwm & 0xff;
   }

@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 // Число шагов ШИМ -- это TIM1_ARR
-#define PWM_SIZE  UINT16_MAX
+#define TARGET_FREQ 16000
+#define PWM_SIZE  (16000000 / TARGET_FREQ)
 static const uint16_t kPWM_size = PWM_SIZE;
 
 // Забъёмся на максимальный ШИМ в 60%
@@ -38,9 +39,10 @@ static const uint16_t kUin_min = UIN_MIN;
 static const uint16_t kPWM_slope = PWM_SLOPE;
 
 // Число шагов PWM для индикаторного светодиода, в тиках
-#define PWM_LED_PSC 3
-#define PWM_LED_FREQ (2000000. / (0b1 << PWM_LED_PSC))
-#define PWM_LED_SIZE (PWM_LED_FREQ / 5)
+#define LED_FREQ 5
+#define PWM_LED_PSC 6
+#define PWM_LED_FREQ (16000000. / (0b1 << PWM_LED_PSC))
+#define PWM_LED_SIZE (PWM_LED_FREQ / LED_FREQ)
 static const uint16_t kPWM_LED_size = PWM_LED_SIZE;
 #define PWM_LED_MAX (PWM_LED_SIZE * 1.0)
 static const uint16_t kPWM_LED_max = PWM_LED_MAX;

@@ -16,9 +16,9 @@ void clock_init() {
   CLK_PCKENR1.TIM3 = false;
 
   // Повысим частоту от HSI
-  CLK_CKDIVR.HSIDIV = CLK_CKDIVR_HSIDIV_fhsi_8;
+  CLK_CKDIVR.HSIDIV = CLK_CKDIVR_HSIDIV_fhsi;
   // И понизим для CPU
-  CLK_CKDIVR.CPUDIV = CLK_CKDIVR_CPUDIV_fmaster;
+  CLK_CKDIVR.CPUDIV = CLK_CKDIVR_CPUDIV_fmaster_8;
 
   // Подождём переключения master clock
   while (CLK_SWCR.SWBSY) nop();
@@ -70,7 +70,7 @@ void TIM1_init() {
   // Нам надо 2Гц = 2Mhz/
   // Здесь не 2^PSC, а f_cnt_ck = f_hsi/PSCR[15:0]
   TIM1_PSCRH = 0;
-  TIM1_PSCRL = 10;
+  TIM1_PSCRL = 0;
 
   TIM1_ARRH = kPWM_size >> 8;
   TIM1_ARRL = kPWM_size & 0xff;
