@@ -6,9 +6,11 @@
 // Число шагов ШИМ -- это TIM2_ARR
 // Итоговая частота ШИМ: 16MHz / PWM_SIZE
 #define PWM_SIZE  1000 // freq=16kHz
+static const uint16_t kPWM_size = PWM_SIZE;
 
 // Забъёмся на максимальный ШИМ в 60%
 #define PWM_MAX (PWM_SIZE * 0.6)
+static const uint16_t kPWM_max = PWM_MAX;
 
 /**              R3         R4
  *   Vin  <----|====|--*--|====|----||| GND
@@ -23,19 +25,24 @@
  */
 
 // Входное напряжение для нулевого ШИМ
-//                10
-//           измер-ий          Vdd     R4       R3      R4
-#define UIN_MAX  (10 * (27.4 / 5.0) * (2000. / (10000 + 2000)) * 1024)
+//                 Vmax    Vdd      R4     R3      R4
+#define Vmax 27.4
+#define UIN_MAX  ((27.4 / 4.94) * (4.93 / 29.2) * 1024)
+static const uint16_t kUin_max = UIN_MAX;
 
 // Входное напряжение для максимального ШИМ
-#define UIN_MIN  (10 * (27.0 / 5.0) * (2000. / (10000 + 2000)) * 1024)
+#define UIN_MIN  (UIN_MAX / Vmax * 27.0)
+static const uint16_t kUin_min = UIN_MIN;
 
 // Коэффициент для пересчёта напряжения в ШИМ
-#define PWM_SLOPE (PWM_MAX / (UIN_MAX - UIN_MIN));
+#define PWM_SLOPE (PWM_MAX / (UIN_MAX - UIN_MIN))
+static const uint16_t kPWM_slope = PWM_SLOPE;
 
 // Число шагов PWM для индикаторного светодиода, в тиках
 #define PWM_LED_MAX UINT16_MAX
+static const uint16_t kPWM_LED_max = PWM_LED_MAX;
 
-#define PWM_LED_SLOPE (PWM_LED_MAX / (UIN_MAX - UIN_MIN))
+#define PWM_LED_SLOPE (PWM_LED_MAX / (UIN_MAX - 0))
+static const uint16_t kPWM_LED_slope = PWM_LED_SLOPE;
 
 #endif  // ALTERNATOR_CONSTANTS_H

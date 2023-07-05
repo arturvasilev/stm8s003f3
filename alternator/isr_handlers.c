@@ -36,16 +36,13 @@ void UART1_DFULL_handler() __interrupt(18) {}
 
 // ADC
 void ADC1_handler() __interrupt(22) {
-  // Остановим непрерывные конверсии
-  ADC_CR1.CONT = false;
-
   ADC_process();
 
   // Очистим флаг EOC
   ADC_CSR.EOC = false;
  
-  // Запустим конвертации
-  ADC_CR1.CONT = true;
+  // Пнём ADC для следующей конвертации
+  ADC_CR1.ADON = true;
 }
 
 void TIM4_UOVFL_handler() __interrupt(23) {

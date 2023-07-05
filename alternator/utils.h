@@ -11,11 +11,13 @@ struct ADC_t {
   uint16_t vals[2];
 };
 extern struct ADC_t ADC;
+extern uint16_t *Vin;
+extern uint16_t *Vout;
 
 void ADC_process();
 void PWM_update();
+void PD3_on();
+void PD3_off();
 
-extern uint16_t *Vin;
-extern uint16_t *Vout;
 
 #endif  // ALTERNATOR_UTILS_H

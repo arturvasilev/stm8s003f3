@@ -142,6 +142,9 @@ void ADC_init() {
   ADC.channels[0] = 2;
   ADC.channels[1] = 3;
   ADC.vals[0] = ADC.vals[1] = 0;
+  // Начнём конвертации с Uin
+  ADC.converting_idx = 0;
+  ADC_CSR.CH = ADC.channels[ADC.converting_idx];
 
   // Disable Shmidtt triggers -- high means "disable"
   // Lowers static power consumption on I/O port
@@ -159,21 +162,13 @@ void ADC_init() {
 
   // Включим прерывание по окончании конвертации
   ADC_CSR.EOCIE = true;
-  // Включаем непрерывную конвертацию
-  ADC_CR1.CONT = true;
-  // Делаем за одно прерывание 10 измерений,
-  // Складывая результаты в ADC_DBxR
-  ADC_CR3.DBUF = true;
-
-  // Начнём конвертации с Uin
-  ADC_CSR.CH = ADC.channels[ADC.converting_idx];
 
   // Выведем ADC из энергосебергающего режима
   ADC_CR1.ADON = true;
 
   // Ждём 7us до его пробуждения
   // У нас fCPU = 2MHz
-  for (volatile uint32_t i = 0; i < (7 * 2); ++i)
+  for (volatile uint32_t i = 0; i < (7 * 4); ++i)
     ;
 
   // Пинаем ADC для начала конвертаций
@@ -185,7 +180,7 @@ void init() {
   GPIO_init();
   TIM1_init();
   TIM2_init();
-  TIM4_init();
+  // TIM4_init();
   ADC_init();
 }
 
