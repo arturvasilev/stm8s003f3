@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+// ADC
+#define MEAS_ACCUMULATE 10
+
 // Число шагов ШИМ -- это TIM1_ARR
 #define TARGET_FREQ 16000
 #define PWM_SIZE  (16000000 / TARGET_FREQ)
@@ -27,7 +30,7 @@ static const uint16_t kPWM_max = PWM_MAX;
 // Входное напряжение для нулевого ШИМ
 //                 Vmax    Vdd      R4     R3      R4
 #define Vmax 27.4
-#define UIN_MAX  ((27.4 / 4.94) * (4.93 / 29.2) * 1024)
+#define UIN_MAX  (MEAS_ACCUMULATE * (27.4 / 4.94) * (4.93 / 29.2) * 1024)
 static const uint16_t kUin_max = UIN_MAX;
 
 // Входное напряжение для максимального ШИМ

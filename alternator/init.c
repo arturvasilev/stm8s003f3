@@ -116,6 +116,8 @@ void ADC_init() {
   ADC.channels[0] = 4;
   ADC.channels[1] = 3;
   ADC.vals[0] = ADC.vals[1] = 0;
+  ADC.val_buffer = 0;
+  ADC.counter = 0;
   // Начнём конвертации с Uin
   ADC.converting_idx = 0;
   ADC_CSR.CH = ADC.channels[ADC.converting_idx];

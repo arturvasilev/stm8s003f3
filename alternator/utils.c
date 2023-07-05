@@ -26,13 +26,36 @@ uint16_t ADC_read() {
 }
 
 void ADC_process() {
-  ADC.vals[ADC.converting_idx] = ADC_read();
+   ADC.val_buffer += ADC_read();
 
-  // Переключимся на следующий канал
-  ADC_CSR.CH = ADC_next_channel();
+  ++ADC.counter;
+
+  if (ADC.counter >= MEAS_ACCUMULATE) {
+    // Сбросим число измерений одного датчика
+    ADC.counter = 0;
+
+    // Опубликуем сделанное измерение
+    ADC.vals[ADC.converting_idx] = ADC.val_buffer;
+    ADC.val_buffer = 0;
+
+    // Переключимся на следующий канал
+    ADC_CSR.CH = ADC_next_channel();
+
+    ADC.dirty = true;
+  }
 }
 
 void PWM_update() {
+  // Проверим, что это свежее измерение -- его counter=0
+  // В противном случае, если измерения ещё накапливаются,
+  // нам нечего менять
+  if (ADC.dirty == false) return;
+
+  ADC.dirty = false;
+
+  if (ADC.dirty) PA1_on();
+  else PA1_off();
+
   // Обновим ШИМ до транзисторов
   {
     uint16_t pwm;
