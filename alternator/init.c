@@ -4,7 +4,6 @@
 #include "init.h"
 #include "utils.h"
 #include "constants.h"
-#include "swPWM.h"
 
 #include "../regmap.h"
 #include "../defines.h"
@@ -14,9 +13,7 @@
 void clock_init() {
   // Disable clock for unnecessary peripherals
   CLK_PCKENR1.I2C = false;
-  CLK_PCKENR1.TIM46 = false;
   CLK_PCKENR1.TIM3 = false;
-  CLK_PCKENR1.TIM1 = false;
 
   // Повысим частоту от HSI
   CLK_CKDIVR.HSIDIV = CLK_CKDIVR_HSIDIV_fhsi;
@@ -39,21 +36,71 @@ void GPIO_init() {
     GPIOD.CR2 |= mask;
   }
 
-  // Для ADC остальные порты (PC4, PD2) здесь не трогаем
+  // PC3 для вывода индикаторного LED
+  // С помощью низкочастотного PWM 2Hz TIM1_CH3
+  {
+    static const uint8_t mask = 0b1 << 3;
+    // PD4 as output
+    GPIOC.DDR |= mask;
+    // Push-pull
+    GPIOC.CR1 |= mask;
+  }
+
+  // Для ADC остальные порты (PC4, PD2, etc) здесь не трогаем
+}
+
+void TIM1_init() {
+  // Настроим TIM1_CH3 (на PC3)
+
+  // Preload of auto-reload register
+  TIM1_CR1.ARPE = true;
+
+  // Preload enable -- amust for PWM
+  TIM1_CCMR3.OCPE = true;
+  
+  // Установим режим таймера ШИМ
+  TIM1_CCMR3.OCM = TIMx_CCMR_OCM_PWM_mode1;
+
+  // Compare output enable
+  TIM1_CCER2.CC3E = true;
+
+  // Установим частоту
+  // f_hsi = 16MHz
+  // Нам надо 2Гц = 16Mhz/
+  // Здесь не 2^PSC, а f_cnt_ck = f_hsi/PSCR[15:0]
+  TIM1_PSCRH = 0xff;
+  TIM1_PSCRL = 0xff;
+  // Здесь частота 16MHz / UINT16_MAX = 244,144 Hz;
+#define f_ck (16000000. / UINT16_MAX)
+  // Дополнительное понизим частоту с помощью ARR
+#define f_ARR (UINT16_MAX / f_ck) // С этой частотой заполняется CNT
+  
+  // Слишком высокая частота!
+  // Всё равно опубликуем
+  const uint16_t kf_ARR = f_ARR;
+
+
+#undef f_ARR
+#undef f_ck
+
+  // Включим сконфигурированный таймер
+  TIM1_CR1.CEN = true;
 }
 
 void TIM2_init() {
   // Вывод PWM с частотой 500кГц
   // 16-bit ШИМ регулирует выходную мощность
-  // Вывод -- на PD4 (TIM2_CH2)
+  // Вывод -- на PD4 (TIM2_CH1)
 
   // Preload enable -- amust for PWM
   TIM2_CCMR1.OCPE = true;
+  
   // Режим работы канала
   TIM2_CCMR1.OCM = TIMx_CCMR_OCM_PWM_mode1;
-  // TIM2_CCMR1.OCM = 0b11;
+
   // Compare output enable
   TIM2_CCER1.CC1E = true;
+
   // Auto-reload buffer
   TIM2_CR1.ARPE = true;
 
@@ -136,10 +183,10 @@ void ADC_init() {
 void init() {
   clock_init();
   GPIO_init();
+  TIM1_init();
   TIM2_init();
   TIM4_init();
   ADC_init();
-  swPWM_init();
 }
 
 #endif  // ALTERNATOR_INIT_C

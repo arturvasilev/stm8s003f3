@@ -3,7 +3,6 @@
 
 #include "utils.h"
 #include "constants.h"
-#include "swPWM.h"
 
 #include "../regmap.h"
 
@@ -58,16 +57,17 @@ void PWM_update() {
   {
    uint16_t pwm;
 
-    if (*Vin < UIN_MIN) pwm = SWPWM_LED_MAX;
+    if (*Vin < UIN_MIN) pwm = PWM_LED_MAX;
     else if (*Vin >= UIN_MAX) pwm = 0;
     else {
       // pwm = PWM_SLOPE * (*Vin - UIN_MIN);
       pwm = *Vin;
       pwm -= UIN_MIN;
-      pwm *= SWPWM_LED_SLOPE;
+      pwm *= PWM_LED_SLOPE;
     }
 
-    swPWM_set(pwm);
+    TIM1_CCR3H = pwm >> 8;
+    TIM1_CCR3L = pwm & 0xff;
   }
 }
 
